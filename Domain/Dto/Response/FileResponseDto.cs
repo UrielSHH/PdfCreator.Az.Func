@@ -4,6 +4,6 @@
     {
         public string? FileBase64 { get; set; }
         public bool Success { get; set; }
-        public string? Error { get; set; }
+        public List<string> Errors { get; set; } = new();
     }
 }

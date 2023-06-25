@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.IO;
@@ -15,12 +14,10 @@ namespace PdfCreator.Az.Func.File
     public class CreateFile
     {
         private readonly IMediator _mediator;
-        private readonly IConfiguration _configuration;
         private readonly ILogger<ExportPdfModel> _logger;
 
-        public CreateFile(IConfiguration configuration, IMediator mediator, ILogger<ExportPdfModel> logger)
+        public CreateFile(IMediator mediator, ILogger<ExportPdfModel> logger)
         {
-            _configuration = configuration;
             _mediator = mediator;
             _logger = logger;
         }
@@ -39,7 +36,7 @@ namespace PdfCreator.Az.Func.File
 
             var res = await _mediator.Send(exportPdfModel);
 
-            return new OkObjectResult(_configuration["IronPdfLicense"]);
+            return new OkObjectResult(res);
         }
     }
 }

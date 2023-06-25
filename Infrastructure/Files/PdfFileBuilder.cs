@@ -1,18 +1,11 @@
 ﻿using Application.Common.Interfaces;
 using Domain.Dto.Response;
-using Microsoft.Extensions.Configuration;
 using SelectPdf;
 
 namespace Infrastructure.Files
 {
     public class PdfFileBuilder : IPdfFileBuilder
     {
-        private readonly IConfiguration _configuration;
-
-        public PdfFileBuilder(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
         public FileResponseDto Build(string template)
         {
             FileResponseDto fileResponseDto = new();
@@ -43,7 +36,7 @@ namespace Infrastructure.Files
             catch (Exception ex)
             {
                 fileResponseDto.Success = false;
-                fileResponseDto.Error = string.Join("|", ex.Message, ex.InnerException);
+                fileResponseDto.Errors.Add(string.Join("|", ex.Message, ex.InnerException));
                 return fileResponseDto;
             }
         }

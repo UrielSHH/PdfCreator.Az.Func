@@ -1,5 +1,6 @@
 ﻿using Application.Common.Interfaces;
 using Domain.Dto.Response;
+using FluentValidation.Results;
 using MediatR;
 
 namespace Application.Files.Queries.ExportPdf
@@ -15,26 +16,32 @@ namespace Application.Files.Queries.ExportPdf
 
         public async Task<FileResponseDto> Handle(ExportPdfModel request, CancellationToken cancellationToken)
         {
-            bool isValid = IsValidateRequest(request);
+            //Check for errors
+            IReadOnlyList<ValidationFailure>? errors = IsValidateRequest(request);
+            if (errors != null)
+                return new FileResponseDto { Success = false, Errors = errors.Select(x => x.ErrorMessage).ToList() };
 
+            //Create Pdf file
             FileResponseDto response = _pdfFileBuilder.Build(request.Template);
+            if (!response.Success)
+                return response;
+
+            //Send to blob storage
 
             return response;
         }
 
-        private static bool IsValidateRequest(ExportPdfModel request)
+        private static IReadOnlyList<ValidationFailure>? IsValidateRequest(ExportPdfModel request)
         {
             var validator = new ExportPdfQueryValidator();
             var validationResult = validator.Validate(request);
 
             if (!validationResult.IsValid)
             {
-                //save errors
-
-                return false;
+                return validationResult.Errors;
             }
 
-            return true;
+            return null;
         }
     }
 }
