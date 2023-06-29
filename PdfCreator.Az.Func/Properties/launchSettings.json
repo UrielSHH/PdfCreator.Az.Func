@@ -3,7 +3,14 @@
     "PdfCreator.Az.Func": {
       "commandName": "Project",
       "commandLineArgs": "--port 7175",
-      "launchBrowser": false
+      "launchBrowser": false,
+      "environmentVariables": {
+        "Environment": "DEV",
+        "AppConfConnectionString": "",
+        "TenantId": "",
+        "ClientId": "",
+        "ClientSecret": ""
+      }
     }
   }
 }

@@ -8,10 +8,12 @@ namespace Application.Files.Queries.ExportPdf
     public class ExportPdfQuery : IRequestHandler<ExportPdfModel, FileResponseDto>
     {
         private readonly IPdfFileBuilder _pdfFileBuilder;
+        private readonly IFileShareService _fileShareService;
 
-        public ExportPdfQuery(IPdfFileBuilder pdfFileBuilder)
+        public ExportPdfQuery(IPdfFileBuilder pdfFileBuilder, IFileShareService fileShareService)
         {
             _pdfFileBuilder = pdfFileBuilder;
+            _fileShareService = fileShareService;
         }
 
         public async Task<FileResponseDto> Handle(ExportPdfModel request, CancellationToken cancellationToken)
@@ -27,6 +29,7 @@ namespace Application.Files.Queries.ExportPdf
                 return response;
 
             //Send to blob storage
+            _fileShareService.SaveFileAsync(response);
 
             return response;
         }
