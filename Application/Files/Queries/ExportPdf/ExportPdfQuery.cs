@@ -18,7 +18,7 @@ namespace Application.Files.Queries.ExportPdf
 
         public async Task<FileResponseDto> Handle(ExportPdfModel request, CancellationToken cancellationToken)
         {
-            //Check for errors
+            //Check for errors in request
             IReadOnlyList<ValidationFailure>? errors = IsValidateRequest(request);
             if (errors != null)
                 return new FileResponseDto { Success = false, Errors = errors.Select(x => x.ErrorMessage).ToList() };
@@ -28,8 +28,8 @@ namespace Application.Files.Queries.ExportPdf
             if (!response.Success)
                 return response;
 
-            //Send to blob storage
-            _fileShareService.SaveFileAsync(response);
+            //Send to file share
+            await _fileShareService.SaveFileAsync(response);
 
             return response;
         }

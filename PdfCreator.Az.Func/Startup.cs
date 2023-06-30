@@ -1,4 +1,5 @@
 ﻿using Application;
+using Application.Common;
 using Azure.Identity;
 using Infrastructure;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
@@ -13,19 +14,21 @@ namespace PdfCreator.Az.Func
         private IConfiguration _configuration;
         public override void ConfigureAppConfiguration(IFunctionsConfigurationBuilder builder)
         {
-            string environmentLabel = Environment.GetEnvironmentVariable("Environment");
-            string connectionString = Environment.GetEnvironmentVariable("AppConfConnectionString");
-            string tenantId = Environment.GetEnvironmentVariable("TenantId");
-            string clientId = Environment.GetEnvironmentVariable("ClientId");
-            string clientSecret = Environment.GetEnvironmentVariable("ClientSecret");
+            string environmentLabel = Environment.GetEnvironmentVariable(ConfigurationConstants.Environment);
+            string connectionString = Environment.GetEnvironmentVariable(ConfigurationConstants.AppConfConnectionString);
+            string tenantId = Environment.GetEnvironmentVariable(ConfigurationConstants.TenantId);
+            string clientId = Environment.GetEnvironmentVariable(ConfigurationConstants.ClientId);
+            string clientSecret = Environment.GetEnvironmentVariable(ConfigurationConstants.ClientSecret);
 
             ClientSecretCredential credential = new(tenantId, clientId, clientSecret);
 
             IConfiguration config = builder.ConfigurationBuilder
                 .AddAzureAppConfiguration(options =>
                 {
-                    options.Connect(connectionString);
-                    options.Select("app.storage.connection.key1", environmentLabel)
+                    options.Connect(connectionString)
+                    .Select(ConfigurationConstants.DirectoryName, environmentLabel)
+                    .Select(ConfigurationConstants.FileShareName, environmentLabel)
+                    .Select(ConfigurationConstants.FileShareConnection, environmentLabel)
                     .ConfigureKeyVault(kv =>
                     {
                         kv.SetCredential(credential);

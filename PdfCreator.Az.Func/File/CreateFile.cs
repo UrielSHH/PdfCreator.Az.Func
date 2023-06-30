@@ -22,8 +22,8 @@ namespace PdfCreator.Az.Func.File
             _logger = logger;
         }
 
-        [FunctionName("CreatePdf")]
-        public async Task<IActionResult> Run(
+        [FunctionName(nameof(CreatePdf))]
+        public async Task<IActionResult> CreatePdf(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
             ILogger log)
         {
@@ -31,8 +31,10 @@ namespace PdfCreator.Az.Func.File
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
-            ExportPdfModel exportPdfModel = new ExportPdfModel();
-            exportPdfModel.Template = data?.template;
+            ExportPdfModel exportPdfModel = new()
+            {
+                Template = data?.template
+            };
 
             var res = await _mediator.Send(exportPdfModel);
 
